@@ -1,0 +1,2 @@
+pango <- read.csv("Pango_transposed.csv", header=T, row.names=1, sep=",")
+rarecurve(pango, step = 20, sample = raremax, col = "black", cex = 0.6)
