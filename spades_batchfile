@@ -1,0 +1,19 @@
+#!/bin/bash
+
+mkdir Pango_Spades_Output
+
+rsync -azP /staging/swaterworth/Burkholderia_2020_Proj/Pango_A1_1P.fastq ./
+rsync -azP /staging/swaterworth/Burkholderia_2020_Proj/Pango_A1_2P.fastq ./
+
+/usr/bin/python bin/spades.py -t 16 -m 250 \
+        --meta \
+        --pe1-1 Pango_A1_1P.fastq --pe1-2 Pango_A1_2P.fastq \
+        -k 21,33,55,77,99,127 \
+        -o Pango_Spades_Output
+
+tar -cvzf Pango_Spades_Output.tar.gz Pango_Spades_Output
+
+mv Pango_Spades_Output.tar.gz /staging/swaterworth/
+
+rm *.fastq
+rm *.gz
