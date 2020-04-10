@@ -1,0 +1,23 @@
+#!/bin/bash
+#SBATCH --partition=queue
+#SBATCH --time=14-00:00:00
+#SBATCH -N 1 # Nodes
+#SBATCH -n 1 # Tasks
+#SBATCH --cpus-per-task=16
+#SBATCH --error=autometa.%J.err
+#SBATCH --output=autometa.%J.out
+#SBATCH --mail-user=samche42@gmail.com
+#SBATCH --mail-type=ALL
+
+cd /media/box4/Pango_meta/Pango_Spades_Output
+
+make_taxonomy_table.py --assembly scaffolds.fasta --processors 16 --length_cutoff 3000 --db_dir /mnt/autometa_databases
+
+run_autometa.py --assembly Bacteria.fasta --processors 16 --length_cutoff 3000 --taxonomy_table taxonomy.tab --db_dir /mnt/autometa_databases
+
+ML_recruitment.py --contig_tab recursive_dbscan_output.tab \
+    --k_mer_matrix k-mer_matrix --out_table ML_recruitment_output.tab
+
+cluster_process.py --bin_table ML_recruitment_output.tab --column cluster \
+    --fasta Bacteria.fasta --do_taxonomy --db_dir /mnt/autometa_databases \
+    --output_dir Pango_cluster_output
